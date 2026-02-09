@@ -1,5 +1,9 @@
 package com.booklet.booklet.service;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.lang.NonNull;
@@ -15,5 +19,15 @@ public class booklet_entry_service {
 
     public void saveEntry(@NonNull booklet_entry booklet_entry) {
         booklet_entry_repository.save(booklet_entry);
+    }
+
+   public List<booklet_entry> getAllEntries() {
+        return booklet_entry_repository.findAll();
+    }
+   public Optional<booklet_entry> findByIdEntry(ObjectId id) {
+        return booklet_entry_repository.findById(id);
+    }
+   public void deleteEntry(ObjectId id) {
+        booklet_entry_repository.deleteById(id);
     }
 }

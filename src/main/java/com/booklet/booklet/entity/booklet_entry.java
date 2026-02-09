@@ -2,20 +2,31 @@ package com.booklet.booklet.entity;
 
 
 
+import java.time.LocalDate;
+
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "booklet_entries")
 public class booklet_entry {
     @Id
-    private String id;
+    private ObjectId id;
     private String title;
     private String content;
+    private LocalDate date;
     
-    public String getId() {
+    
+    public LocalDate getDate() {
+        return date;
+    }
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+    public ObjectId getId() {
         return id;
     }
-    public void setId(String id) {
+    public void setId(ObjectId id) {
         this.id = id;
     } 
     public String getTitle() {

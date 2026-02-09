@@ -1,7 +1,9 @@
 package com.booklet.booklet.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,27 +19,35 @@ public class bookletcontroller_v2 {
 
     @GetMapping
     public List<booklet_entry> getAllEntries() {
-        return null;
+        return booklet_entry_service.getAllEntries();
     }
 
     @PostMapping
-    public boolean createEntry(@RequestBody booklet_entry myentry) {
+    public booklet_entry createEntry(@RequestBody booklet_entry myentry) {
+        myentry.setDate(LocalDate.now());
         booklet_entry_service.saveEntry(myentry);
-        return true;
+        return myentry;
     }
 
     @GetMapping("/id/{myId}")
-    public booklet_entry getbyid(@PathVariable Long myId) {
-        return null;
+    public booklet_entry getbyid(@PathVariable ObjectId myId) {
+        return booklet_entry_service.findByIdEntry(myId).orElse(null);
     }
 
     @DeleteMapping("/id/{myId}")
-    public booklet_entry deletegetbyid(@PathVariable Long myId) {
-        return null;
+    public boolean deletegetbyid(@PathVariable ObjectId myId) {
+        booklet_entry_service.deleteEntry(myId);
+        return true;
     }
 
     @PutMapping("/id/{myId}")
-    public booklet_entry updateEntry(@PathVariable Long myId, @RequestBody booklet_entry myentry) {
-        return null;
+    public booklet_entry updateEntry(@PathVariable ObjectId myId, @RequestBody booklet_entry newEntry) {
+        booklet_entry old = booklet_entry_service.findByIdEntry(myId).orElse(null);
+       if(old !=null){
+        old.setTitle(newEntry.getTitle()!=null && !newEntry.getTitle().equals("")?newEntry.getTitle():old.getTitle());
+        old.setContent(newEntry.getContent()!=null && !newEntry.getContent().equals("")?newEntry.getContent():old.getContent());
+       } 
+        booklet_entry_service.saveEntry(old);
+        return old;
     }
 }
