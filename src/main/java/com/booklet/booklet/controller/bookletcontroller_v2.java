@@ -2,9 +2,12 @@ package com.booklet.booklet.controller;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.booklet.booklet.entity.booklet_entry;
@@ -18,8 +21,14 @@ public class bookletcontroller_v2 {
     private booklet_entry_service booklet_entry_service;
 
     @GetMapping
-    public List<booklet_entry> getAllEntries() {
-        return booklet_entry_service.getAllEntries();
+    public ResponseEntity<?> getAllEntries() {
+        List<booklet_entry> all = booklet_entry_service.getAllEntries();
+        if(all!=null && !all.isEmpty()){
+         return new ResponseEntity<>(all,HttpStatus.OK);
+        }
+        else{
+         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping
@@ -30,8 +39,12 @@ public class bookletcontroller_v2 {
     }
 
     @GetMapping("/id/{myId}")
-    public booklet_entry getbyid(@PathVariable ObjectId myId) {
-        return booklet_entry_service.findByIdEntry(myId).orElse(null);
+    public ResponseEntity<booklet_entry> getbyid(@PathVariable ObjectId myId) {
+       Optional<booklet_entry> entry = booklet_entry_service.findByIdEntry(myId);
+       if(entry.isPresent()){
+        return new ResponseEntity<>(entry.get(),HttpStatus.OK);
+       }
+       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @DeleteMapping("/id/{myId}")
