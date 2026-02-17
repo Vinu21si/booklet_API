@@ -33,4 +33,9 @@ public class user_service {
     public User findByUsername(String username) {
         return user_repository.findByUsername(username);
     }
+
+    public void saveEntry(User user) {
+        user_repository.save(user);
+        throw new UnsupportedOperationException("Unimplemented method 'saveEntry'");
+    }
 }

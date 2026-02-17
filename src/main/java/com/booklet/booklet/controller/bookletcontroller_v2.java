@@ -1,6 +1,6 @@
 package com.booklet.booklet.controller;
 
-import java.time.LocalDate;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -10,21 +10,25 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.booklet.booklet.entity.User;
 import com.booklet.booklet.entity.booklet_entry;
 import com.booklet.booklet.service.booklet_entry_service;
+import com.booklet.booklet.service.user_service;
 
 
 
 @RestController
 @RequestMapping("/booklet")
 public class bookletcontroller_v2 {
-    
+    @Autowired
+    private user_service user_Service;;
     @Autowired
     private booklet_entry_service booklet_entry_service;
 
-    @GetMapping
-    public ResponseEntity<?> getAllEntries() {
-        List<booklet_entry> all = booklet_entry_service.getAllEntries();
+    @GetMapping("{userName}")
+    public ResponseEntity<?> getAllEntriesofuser(@PathVariable String userName) {
+       User user= user_Service.findByUsername(userName);
+        List<booklet_entry> all = user.getEntries();
         if(all!=null && !all.isEmpty()){
          return new ResponseEntity<>(all,HttpStatus.OK);
         }
@@ -33,11 +37,15 @@ public class bookletcontroller_v2 {
         }
     }
 
-    @PostMapping
-    public booklet_entry createEntry(@RequestBody booklet_entry myentry) {
-        myentry.setDate(LocalDate.now());
-        booklet_entry_service.saveEntry(myentry);
-        return myentry;
+    @PostMapping("{userName}")
+    public ResponseEntity<booklet_entry> createEntry(@PathVariable String userName, @RequestBody booklet_entry myentry) {
+       try{
+        booklet_entry_service.saveEntry(myentry,userName);
+        return new ResponseEntity<>(myentry,HttpStatus.CREATED);
+       }catch(Exception e){
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+       }
+
     }
 
     @GetMapping("/id/{myId}")
@@ -50,12 +58,12 @@ public class bookletcontroller_v2 {
     }
 
     @DeleteMapping("/id/{myId}")
-    public boolean deletegetbyid(@PathVariable ObjectId myId) {
+    public ResponseEntity<?> deletegetbyid(@PathVariable ObjectId myId) {
         booklet_entry_service.deleteEntry(myId);
-        return true;
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping("/id/{myId}")
+  /*   @PutMapping("/id/{myId}")
     public booklet_entry updateEntry(@PathVariable ObjectId myId, @RequestBody booklet_entry newEntry) {
         booklet_entry old = booklet_entry_service.findByIdEntry(myId).orElse(null);
        if(old !=null){
@@ -64,5 +72,5 @@ public class bookletcontroller_v2 {
        } 
         booklet_entry_service.saveEntry(old);
         return old;
-    }
+    }*/
 }
